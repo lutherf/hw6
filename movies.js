@@ -18,6 +18,23 @@ window.addEventListener('DOMContentLoaded', async function(event) {
   // console to ensure you've got good data
   // ⬇️ ⬇️ ⬇️
 
+  let url = 'https://api.themoviedb.org/3/movie/now_playing?api_key=5103a7cb41fa9394b2db2041fb884ef5&language=en-US'
+  let response = await fetch(url)
+  let movies = await response.json()
+  console.log(movies)
+
+//   //TEMPORARY CODE - HARDCODED TEST WITH NO LOOP
+//   document.querySelector('.movies').insertAdjacentHTML('beforeend', `<div class=".movies-test w-1/5 p-4">
+//   <img src="https://images.unsplash.com/photo-1565253182059-6f6ff85833ef" class="w-full">
+//   <a href="#" class="watched-button block text-center text-white bg-green-500 mt-4 px-4 py-2 rounded">Watched</a>
+// </div>`)
+// document.querySelector(`.watched-button`).addEventListener('click', async function(event){
+//   event.preventDefault()
+//   document.querySelector('.movies').classList.add('opacity-20')
+//   console.log(`Movie test was watched.`)
+// })
+//   // END TEMP CODE
+
   // ⬆️ ⬆️ ⬆️ 
   // End Step 1
   
@@ -33,7 +50,15 @@ window.addEventListener('DOMContentLoaded', async function(event) {
   //   <a href="#" class="watched-button block text-center text-white bg-green-500 mt-4 px-4 py-2 rounded">I've watched this!</a>
   // </div>
   // ⬇️ ⬇️ ⬇️
+  for(let i=0; i<movies.results.length; i++){
+    let movieID = movies.results[i].id
+    let poster = movies.results[i].poster_path
 
+    document.querySelector('.movies').insertAdjacentHTML('beforeend', `<div class="movies-${movieID} w-1/5 p-4">
+    <img src="https://image.tmdb.org/t/p/w500/${poster}" class="w-full">
+    <a href="#" class="watched-button block text-center text-white bg-green-500 mt-4 px-4 py-2 rounded">I've watched this!</a>
+  </div>`)
+  
   // ⬆️ ⬆️ ⬆️ 
   // End Step 2
 
@@ -48,6 +73,21 @@ window.addEventListener('DOMContentLoaded', async function(event) {
   //   the movie is watched. Use .classList.remove('opacity-20')
   //   to remove the class if the element already contains it.
   // ⬇️ ⬇️ ⬇️
+  document.querySelector(`.movies-${movieID} .watched-button`).addEventListener('click', async function(event){
+    event.preventDefault()
+    document.querySelector(`.movies-${movieID}`).classList.add('opacity-20')
+    console.log(`Movie ${movieID} was watched.`)
+
+    let db = firebase.firestore()
+    let querySnapshot = await db.collection('watched').get()
+    let watched = querySnapshot.docs
+    for (let j=0; j < watched.length; j++){
+        let watched = watched[j].data()
+        watched.name
+      }
+
+      })
+    }
 
   // ⬆️ ⬆️ ⬆️ 
   // End Step 3
